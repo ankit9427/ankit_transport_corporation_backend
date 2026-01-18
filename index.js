@@ -261,8 +261,12 @@ app.get("/api/test-email", async (req, res) => {
     });
   }
 });
+app.get("/", (req, res) => {
+  res.send("Backend is live 🚀");
+});
 
 app.listen(PORT, () => {
+  
   console.log(`Server is running on http://localhost:${PORT}`);
   console.log("Email service configured with:", process.env.EMAIL_USER);
 });
