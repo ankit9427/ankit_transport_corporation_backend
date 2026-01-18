@@ -20,22 +20,21 @@ app.post("/api/send-message", async (req, res) => {
   const { name, email, message } = req.body;
 
   console.log("Attempting to send message from:", email);
-  console.log("Email User:", process.env.EMAIL_USER);
+  console.log("Email User:", process.env.BREVO_SMTP_USER);
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
+    port: process.env.BREVO_SMTP_PORT || 587,
+    secure: false,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
+      user: process.env.BREVO_SMTP_USER,
+      pass: process.env.BREVO_SMTP_PASS,
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER,
+    from: process.env.BREVO_FROM_EMAIL,
+    to: process.env.BREVO_FROM_EMAIL,
     replyTo: email,
     subject: `New Message from ${name} - Ankit Transport`,
     html: `
@@ -83,19 +82,18 @@ app.post("/api/send-quotation", async (req, res) => {
   console.log("Attempting to send quotation from:", email);
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
+    port: process.env.BREVO_SMTP_PORT || 587,
+    secure: false,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
+      user: process.env.BREVO_SMTP_USER,
+      pass: process.env.BREVO_SMTP_PASS,
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER,
+    from: process.env.BREVO_FROM_EMAIL,
+    to: process.env.BREVO_FROM_EMAIL,
     replyTo: email,
     subject: `Quotation Request from ${name} - Ankit Transport`,
     html: `
@@ -238,20 +236,19 @@ app.delete("/api/messages/:id", (req, res) => {
 app.get("/api/test-email", async (req, res) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
+      port: process.env.BREVO_SMTP_PORT || 587,
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_PASS,
       },
     });
 
     await transporter.verify();
     res.status(200).json({ 
       message: "Email configuration is working!", 
-      emailUser: process.env.EMAIL_USER 
+      emailUser: process.env.BREVO_SMTP_USER 
     });
   } catch (error) {
     console.error("Email configuration error:", error.message);
@@ -268,5 +265,6 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   
   console.log(`Server is running on http://localhost:${PORT}`);
-  console.log("Email service configured with:", process.env.EMAIL_USER);
+  console.log("Email service configured with:", process.env.BREVO_SMTP_USER);
+  console.log("Using Brevo SMTP:", process.env.BREVO_SMTP_HOST);
 });
